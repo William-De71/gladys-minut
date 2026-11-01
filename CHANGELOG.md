@@ -5,7 +5,7 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow [Semantic Versioning](https://semver.org/). This file is generated at
 each release from the Conventional Commits: do not edit it by hand.
 
-## [0.1.0] - unreleased
+## [0.1.0] - 2026-11-01
 
 ### Added
 
@@ -15,3 +15,5 @@ each release from the Conventional Commits: do not edit it by hand.
 - **polling:** events every minute, homes every 5 minutes, sensors at their next expected report (5 to 60 minutes), one queue under the rate limit of the API with a back-off on 429
 - **configuration:** client id and secret with a guide, length of the noise alerts pause, language, "Connect and search" and "Diagnostic" buttons
 - **i18n:** English, French, German and Spanish for the manifest, the runtime texts, the documentation and the README
+
+[0.1.0]: https://github.com/William-De71/gladys-minut/releases/tag/v0.1.0
