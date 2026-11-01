@@ -1,0 +1,2892 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Minut",
+  "description": {
+    "en": "Minut sensors: noise, temperature, humidity, alarm and home events, via the Minut API.",
+    "fr": "Capteurs Minut : bruit, température, humidité, alarme et événements, via l’API Minut.",
+    "de": "Minut-Sensoren: Lärm, Temperatur, Feuchtigkeit, Alarm und Ereignisse über die Minut-API.",
+    "es": "Sensores Minut: ruido, temperatura, humedad, alarma y eventos, con la API de Minut."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/william-de71/gladys-minut:0.1.0",
+  "gladys_version": ">=5.3.0",
+  "categories": ["security", "environment"],
+  "keywords": [
+    "Minut Point",
+    "noise monitoring",
+    "surveillance du bruit",
+    "Lärmüberwachung",
+    "noise sensor",
+    "decibel",
+    "Airbnb",
+    "short-term rental",
+    "location saisonnière",
+    "home alarm"
+  ],
+  "cover_image": "https://raw.githubusercontent.com/William-De71/gladys-minut/main/cover.jpg",
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Minut API client",
+        "fr": "Client d’API Minut",
+        "de": "Minut-API-Client",
+        "es": "Cliente de la API de Minut"
+      },
+      "description": {
+        "en": "The integration reads your Minut sensors through the official Minut API. Minut opens the API only on its Enterprise plan: without it, the client cannot be created or gets no data. In the Minut web app, open Settings, then Developer tools, and create an API client. Copy its client id and secret here.",
+        "fr": "L’intégration lit vos capteurs Minut par l’API officielle de Minut. Minut n’ouvre l’API qu’avec son offre Enterprise : sans elle, le client ne peut pas être créé ou ne reçoit aucune donnée. Dans l’appli web Minut, ouvrez Settings, puis Developer tools, et créez un client d’API. Copiez ici son identifiant et son secret.",
+        "de": "Die Integration liest deine Minut-Sensoren über die offizielle Minut-API. Minut öffnet die API nur mit seinem Enterprise-Tarif: ohne ihn lässt sich der Client nicht anlegen oder er bekommt keine Daten. Öffne in der Minut-Web-App Settings, dann Developer tools, und leg einen API-Client an. Kopier seine Client-ID und sein Secret hierher.",
+        "es": "La integración lee sus sensores Minut a través de la API oficial de Minut. Minut solo abre la API con su plan Enterprise: sin él, el cliente no se puede crear o no recibe datos. En la app web de Minut, abra Settings, luego Developer tools, y cree un cliente de API. Copie aquí su id y su secreto."
+      },
+      "links": [
+        {
+          "url": "https://web.minut.com/settings/api-clients",
+          "label": {
+            "en": "Minut developer tools",
+            "fr": "Outils développeur Minut",
+            "de": "Minut-Entwicklertools",
+            "es": "Herramientas de desarrollo de Minut"
+          }
+        },
+        {
+          "url": "https://developer.minut.com",
+          "label": {
+            "en": "Minut API documentation",
+            "fr": "Documentation de l’API Minut",
+            "de": "Dokumentation der Minut-API",
+            "es": "Documentación de la API de Minut"
+          }
+        }
+      ]
+    },
+    {
+      "key": "client_id",
+      "type": "string",
+      "required": true,
+      "label": {
+        "en": "Client id",
+        "fr": "Identifiant du client",
+        "de": "Client-ID",
+        "es": "Id del cliente"
+      }
+    },
+    {
+      "key": "client_secret",
+      "type": "secret",
+      "required": true,
+      "label": {
+        "en": "Client secret",
+        "fr": "Secret du client",
+        "de": "Client-Secret",
+        "es": "Secreto del cliente"
+      }
+    },
+    {
+      "key": "options",
+      "type": "section",
+      "label": {
+        "en": "Options",
+        "fr": "Options",
+        "de": "Optionen",
+        "es": "Opciones"
+      },
+      "description": {
+        "en": "Sensors report to Minut about once an hour, or at once when something happens: values follow that pace, events reach Gladys within a minute or two.",
+        "fr": "Les capteurs transmettent à Minut environ une fois par heure, ou tout de suite quand il se passe quelque chose : les valeurs suivent ce rythme, les événements arrivent dans Gladys en une à deux minutes.",
+        "de": "Die Sensoren melden sich etwa einmal pro Stunde bei Minut, oder sofort, wenn etwas passiert: Die Werte folgen diesem Takt, Ereignisse kommen nach ein bis zwei Minuten in Gladys an.",
+        "es": "Los sensores informan a Minut aproximadamente una vez por hora, o de inmediato cuando ocurre algo: los valores siguen ese ritmo, los eventos llegan a Gladys en uno o dos minutos."
+      }
+    },
+    {
+      "key": "snooze_minutes",
+      "type": "number",
+      "default": 60,
+      "min": 5,
+      "max": 1440,
+      "label": {
+        "en": "Noise alerts pause (minutes)",
+        "fr": "Pause des alertes bruit (minutes)",
+        "de": "Pause der Lärmalarme (Minuten)",
+        "es": "Pausa de alertas de ruido (minutos)"
+      },
+      "description": {
+        "en": "How long turning the noise monitoring off pauses it (a Minut snooze).",
+        "fr": "Durée de la pause quand vous coupez la surveillance du bruit (une mise en veille Minut).",
+        "de": "Wie lange das Ausschalten der Lärmüberwachung sie pausiert (ein Minut-Snooze).",
+        "es": "Cuánto dura la pausa al desactivar la vigilancia del ruido (una pausa de Minut)."
+      }
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "default": "auto",
+      "label": {
+        "en": "Language of the texts",
+        "fr": "Langue des textes",
+        "de": "Sprache der Texte",
+        "es": "Idioma de los textos"
+      },
+      "description": {
+        "en": "Names of the devices and texts of the scenes. Automatic: the language of the dashboard.",
+        "fr": "Noms des appareils et textes des scènes. Automatique : la langue du tableau de bord.",
+        "de": "Namen der Geräte und Texte der Szenen. Automatisch: die Sprache des Dashboards.",
+        "es": "Nombres de los dispositivos y textos de las escenas. Automático: el idioma del panel."
+      },
+      "options": [
+        {
+          "value": "auto",
+          "label": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "de": "Automatisch",
+            "es": "Automático"
+          }
+        },
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "English",
+            "de": "English",
+            "es": "English"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "Français",
+            "fr": "Français",
+            "de": "Français",
+            "es": "Français"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "Deutsch",
+            "fr": "Deutsch",
+            "de": "Deutsch",
+            "es": "Deutsch"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Español",
+            "fr": "Español",
+            "de": "Español",
+            "es": "Español"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "timeout_seconds": 90,
+      "label": {
+        "en": "Connect and search",
+        "fr": "Connecter et rechercher",
+        "de": "Verbinden und suchen",
+        "es": "Conectar y buscar"
+      },
+      "description": {
+        "en": "Checks the client id and secret, then lists your Minut homes and sensors.",
+        "fr": "Vérifie l’identifiant et le secret, puis liste vos maisons et capteurs Minut.",
+        "de": "Prüft Client-ID und Secret und listet dann deine Minut-Zuhause und -Sensoren auf.",
+        "es": "Comprueba el id y el secreto, y luego lista sus hogares y sensores Minut."
+      }
+    },
+    {
+      "key": "diagnostic",
+      "label": {
+        "en": "Diagnostic",
+        "fr": "Diagnostic",
+        "de": "Diagnose",
+        "es": "Diagnóstico"
+      },
+      "description": {
+        "en": "Writes the state of the integration to its logs, without the secret.",
+        "fr": "Écrit l’état de l’intégration dans ses journaux, sans le secret.",
+        "de": "Schreibt den Zustand der Integration in ihre Logs, ohne das Secret.",
+        "es": "Escribe el estado de la integración en sus registros, sin el secreto."
+      }
+    }
+  ],
+  "widgets": [
+    {
+      "key": "home",
+      "icon": "home",
+      "action_timeout_seconds": 30,
+      "label": {
+        "en": "Minut home",
+        "fr": "Maison Minut",
+        "de": "Minut-Zuhause",
+        "es": "Hogar Minut"
+      },
+      "description": {
+        "en": "Alarm, noise, sensors, temperature and sound, with the alarm buttons.",
+        "fr": "Alarme, bruit, capteurs, température et son, avec les boutons d’alarme.",
+        "de": "Alarm, Lärm, Sensoren, Temperatur und Geräusch, mit den Alarmtasten.",
+        "es": "Alarma, ruido, sensores, temperatura y sonido, con los botones de alarma."
+      },
+      "settings": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for the first one.",
+            "fr": "Laissez vide pour la première.",
+            "de": "Leer lassen für das erste.",
+            "es": "Déjelo vacío para el primero."
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "events",
+      "icon": "list",
+      "label": {
+        "en": "Minut events",
+        "fr": "Événements Minut",
+        "de": "Minut-Ereignisse",
+        "es": "Eventos de Minut"
+      },
+      "description": {
+        "en": "The last events of a home: noise, alarms, sensors, climate.",
+        "fr": "Les derniers événements d’une maison : bruit, alarmes, capteurs, climat.",
+        "de": "Die letzten Ereignisse eines Zuhauses: Lärm, Alarme, Sensoren, Klima.",
+        "es": "Los últimos eventos de un hogar: ruido, alarmas, sensores, clima."
+      },
+      "settings": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for the first one.",
+            "fr": "Laissez vide pour la première.",
+            "de": "Leer lassen für das erste.",
+            "es": "Déjelo vacío para el primero."
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "sound_history",
+      "icon": "volume-2",
+      "label": {
+        "en": "Minut sound over 24 h",
+        "fr": "Son Minut sur 24 h",
+        "de": "Minut-Lärm über 24 Std.",
+        "es": "Sonido Minut en 24 h"
+      },
+      "description": {
+        "en": "The sound level of a sensor, hourly average and peak.",
+        "fr": "Le niveau sonore d’un capteur, moyenne et pic horaires.",
+        "de": "Der Geräuschpegel eines Sensors, Stundenmittel und -spitze.",
+        "es": "El nivel sonoro de un sensor, media y pico por hora."
+      },
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for the first one.",
+            "fr": "Un capteur Minut. Laissez vide pour le premier.",
+            "de": "Ein Minut-Sensor. Leer lassen für den ersten.",
+            "es": "Un sensor Minut. Déjelo vacío para el primero."
+          },
+          "required": false
+        }
+      ]
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "noise_disturbance",
+      "label": {
+        "en": "Minut: noise disturbance",
+        "fr": "Minut : perturbation sonore",
+        "de": "Minut: Lärmstörung",
+        "es": "Minut: molestia por ruido"
+      },
+      "description": {
+        "en": "The noise monitoring detects noise above the threshold, or the noise ends.",
+        "fr": "La surveillance du bruit détecte un bruit au-dessus du seuil, ou la fin du bruit.",
+        "de": "Die Lärmüberwachung erkennt Lärm über der Schwelle oder dessen Ende.",
+        "es": "La vigilancia del ruido detecta ruido por encima del umbral, o su fin."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "State",
+            "fr": "État",
+            "de": "Zustand",
+            "es": "Estado"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "started",
+              "label": {
+                "en": "Started",
+                "fr": "Début",
+                "de": "Beginn",
+                "es": "Inicio"
+              }
+            },
+            {
+              "value": "ended",
+              "label": {
+                "en": "Ended",
+                "fr": "Fin",
+                "de": "Ende",
+                "es": "Fin"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "State (started, ended)",
+            "fr": "État (started, ended)",
+            "de": "Zustand (started, ended)",
+            "es": "Estado (started, ended)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        },
+        {
+          "key": "sound_level",
+          "type": "number",
+          "label": {
+            "en": "Sound level (dBA)",
+            "fr": "Niveau sonore (dBA)",
+            "de": "Geräuschpegel (dBA)",
+            "es": "Nivel sonoro (dBA)"
+          }
+        },
+        {
+          "key": "sound_threshold",
+          "type": "number",
+          "label": {
+            "en": "Threshold (dBA)",
+            "fr": "Seuil (dBA)",
+            "de": "Schwelle (dBA)",
+            "es": "Umbral (dBA)"
+          }
+        },
+        {
+          "key": "noise_count",
+          "type": "number",
+          "label": {
+            "en": "Number of warnings",
+            "fr": "Nombre d’avertissements",
+            "de": "Anzahl der Warnungen",
+            "es": "Número de avisos"
+          }
+        }
+      ]
+    },
+    {
+      "key": "alarm_heard",
+      "label": {
+        "en": "Minut: smoke or CO alarm heard",
+        "fr": "Minut : alarme incendie ou CO entendue",
+        "de": "Minut: Rauch- oder CO-Alarm gehört",
+        "es": "Minut: alarma de humo o CO oída"
+      },
+      "description": {
+        "en": "A sensor recognizes the sound of a smoke or carbon monoxide alarm.",
+        "fr": "Un capteur reconnaît le son d’un détecteur de fumée ou de monoxyde de carbone.",
+        "de": "Ein Sensor erkennt den Ton eines Rauch- oder Kohlenmonoxidmelders.",
+        "es": "Un sensor reconoce el sonido de una alarma de humo o de monóxido de carbono."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "security_alarm",
+      "label": {
+        "en": "Minut: security alarm",
+        "fr": "Minut : alarme de sécurité",
+        "de": "Minut: Sicherheitsalarm",
+        "es": "Minut: alarma de seguridad"
+      },
+      "description": {
+        "en": "The security alarm goes off after motion, is silenced, or is muted on a sensor.",
+        "fr": "L’alarme de sécurité se déclenche après un mouvement, est réduite au silence ou coupée sur un capteur.",
+        "de": "Der Sicherheitsalarm löst nach einer Bewegung aus, wird stummgeschaltet oder am Sensor stumm gestellt.",
+        "es": "La alarma de seguridad se dispara tras un movimiento, se silencia o se apaga en un sensor."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Kind",
+            "fr": "Type",
+            "de": "Art",
+            "es": "Tipo"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "triggered",
+              "label": {
+                "en": "Triggered",
+                "fr": "Déclenchée",
+                "de": "Ausgelöst",
+                "es": "Disparada"
+              }
+            },
+            {
+              "value": "silenced",
+              "label": {
+                "en": "Silenced",
+                "fr": "Réduite au silence",
+                "de": "Stummgeschaltet",
+                "es": "Silenciada"
+              }
+            },
+            {
+              "value": "muted",
+              "label": {
+                "en": "Muted on a sensor",
+                "fr": "Coupée sur un capteur",
+                "de": "Am Sensor stumm",
+                "es": "Apagada en un sensor"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "Kind (triggered, silenced, muted)",
+            "fr": "Type (triggered, silenced, muted)",
+            "de": "Art (triggered, silenced, muted)",
+            "es": "Tipo (triggered, silenced, muted)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "alarm_status_changed",
+      "label": {
+        "en": "Minut: alarm turned on or off",
+        "fr": "Minut : alarme activée ou désactivée",
+        "de": "Minut: Alarm ein- oder ausgeschaltet",
+        "es": "Minut: alarma activada o desactivada"
+      },
+      "description": {
+        "en": "The alarm is turned on or off outside Gladys (Minut app, schedule).",
+        "fr": "L’alarme est activée ou désactivée hors de Gladys (appli Minut, programmation).",
+        "de": "Der Alarm wird außerhalb von Gladys ein- oder ausgeschaltet (Minut-App, Zeitplan).",
+        "es": "La alarma se activa o desactiva fuera de Gladys (app Minut, programación)."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "State",
+            "fr": "État",
+            "de": "Zustand",
+            "es": "Estado"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "on",
+              "label": {
+                "en": "On",
+                "fr": "Activée",
+                "de": "Ein",
+                "es": "Activada"
+              }
+            },
+            {
+              "value": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Désactivée",
+                "de": "Aus",
+                "es": "Desactivada"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "State (on, off)",
+            "fr": "État (on, off)",
+            "de": "Zustand (on, off)",
+            "es": "Estado (on, off)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        },
+        {
+          "key": "alarm_status",
+          "type": "string",
+          "label": {
+            "en": "Alarm status (Minut)",
+            "fr": "État de l’alarme (Minut)",
+            "de": "Alarmstatus (Minut)",
+            "es": "Estado de la alarma (Minut)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "tamper",
+      "label": {
+        "en": "Minut: sensor taken off its plate",
+        "fr": "Minut : capteur décroché",
+        "de": "Minut: Sensor abgenommen",
+        "es": "Minut: sensor retirado"
+      },
+      "description": {
+        "en": "A sensor is removed from its mounting plate, put back, or its casing is opened.",
+        "fr": "Un capteur est décroché de son support, remis en place, ou son boîtier est ouvert.",
+        "de": "Ein Sensor wird von der Halterung genommen, wieder angebracht oder sein Gehäuse geöffnet.",
+        "es": "Un sensor se retira de su soporte, se vuelve a colocar o se abre su carcasa."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Kind",
+            "fr": "Type",
+            "de": "Art",
+            "es": "Tipo"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "removed",
+              "label": {
+                "en": "Removed",
+                "fr": "Décroché",
+                "de": "Abgenommen",
+                "es": "Retirado"
+              }
+            },
+            {
+              "value": "mounted",
+              "label": {
+                "en": "Put back",
+                "fr": "Remis en place",
+                "de": "Wieder angebracht",
+                "es": "Colocado de nuevo"
+              }
+            },
+            {
+              "value": "moved",
+              "label": {
+                "en": "Taken off or put back (older sensors)",
+                "fr": "Décroché ou remis (anciens capteurs)",
+                "de": "Abgenommen oder angebracht (ältere Sensoren)",
+                "es": "Retirado o colocado (sensores antiguos)"
+              }
+            },
+            {
+              "value": "casing",
+              "label": {
+                "en": "Casing opened",
+                "fr": "Boîtier ouvert",
+                "de": "Gehäuse geöffnet",
+                "es": "Carcasa abierta"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "Kind (removed, mounted, moved, casing)",
+            "fr": "Type (removed, mounted, moved, casing)",
+            "de": "Art (removed, mounted, moved, casing)",
+            "es": "Tipo (removed, mounted, moved, casing)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "connection_changed",
+      "label": {
+        "en": "Minut: sensor offline or back",
+        "fr": "Minut : capteur hors ligne ou de retour",
+        "de": "Minut: Sensor offline oder zurück",
+        "es": "Minut: sensor desconectado o de vuelta"
+      },
+      "description": {
+        "en": "Minut reports that a sensor went offline, or came back online.",
+        "fr": "Minut signale qu’un capteur est hors ligne, ou de nouveau en ligne.",
+        "de": "Minut meldet, dass ein Sensor offline ging oder wieder online ist.",
+        "es": "Minut indica que un sensor se desconectó o volvió a conectarse."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "State",
+            "fr": "État",
+            "de": "Zustand",
+            "es": "Estado"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "offline",
+              "label": {
+                "en": "Offline",
+                "fr": "Hors ligne",
+                "de": "Offline",
+                "es": "Sin conexión"
+              }
+            },
+            {
+              "value": "online",
+              "label": {
+                "en": "Back online",
+                "fr": "De retour",
+                "de": "Wieder online",
+                "es": "De nuevo conectado"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "State (offline, online)",
+            "fr": "État (offline, online)",
+            "de": "Zustand (offline, online)",
+            "es": "Estado (offline, online)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "battery_low",
+      "label": {
+        "en": "Minut: battery low",
+        "fr": "Minut : pile faible",
+        "de": "Minut: Batterie schwach",
+        "es": "Minut: batería baja"
+      },
+      "description": {
+        "en": "The batteries of a sensor are almost empty (about two weeks left), or empty.",
+        "fr": "Les piles d’un capteur sont presque vides (environ deux semaines), ou vides.",
+        "de": "Die Batterien eines Sensors sind fast leer (etwa zwei Wochen) oder leer.",
+        "es": "Las pilas de un sensor están casi agotadas (unas dos semanas) o agotadas."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Level",
+            "fr": "Niveau",
+            "de": "Stufe",
+            "es": "Nivel"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "low",
+              "label": {
+                "en": "Low",
+                "fr": "Faible",
+                "de": "Schwach",
+                "es": "Baja"
+              }
+            },
+            {
+              "value": "empty",
+              "label": {
+                "en": "Empty",
+                "fr": "Vide",
+                "de": "Leer",
+                "es": "Agotada"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "Level (low, empty)",
+            "fr": "Niveau (low, empty)",
+            "de": "Stufe (low, empty)",
+            "es": "Nivel (low, empty)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "temperature_alert",
+      "label": {
+        "en": "Minut: temperature alert",
+        "fr": "Minut : alerte de température",
+        "de": "Minut: Temperaturwarnung",
+        "es": "Minut: alerta de temperatura"
+      },
+      "description": {
+        "en": "The temperature crosses a threshold set in Minut, comes back, or nears freezing.",
+        "fr": "La température franchit un seuil réglé dans Minut, revient à la normale ou approche du gel.",
+        "de": "Die Temperatur überschreitet eine in Minut gesetzte Schwelle, normalisiert sich oder nähert sich dem Frost.",
+        "es": "La temperatura cruza un umbral definido en Minut, vuelve a la normalidad o se acerca a la congelación."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Alert",
+            "fr": "Alerte",
+            "de": "Warnung",
+            "es": "Alerta"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "high",
+              "label": {
+                "en": "Too high",
+                "fr": "Trop élevée",
+                "de": "Zu hoch",
+                "es": "Demasiado alta"
+              }
+            },
+            {
+              "value": "low",
+              "label": {
+                "en": "Too low",
+                "fr": "Trop basse",
+                "de": "Zu niedrig",
+                "es": "Demasiado baja"
+              }
+            },
+            {
+              "value": "normal",
+              "label": {
+                "en": "Back to normal",
+                "fr": "Revenue à la normale",
+                "de": "Wieder normal",
+                "es": "De nuevo normal"
+              }
+            },
+            {
+              "value": "freezing",
+              "label": {
+                "en": "Almost freezing",
+                "fr": "Risque de gel",
+                "de": "Fast Frost",
+                "es": "Casi bajo cero"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "Alert (high, low, normal, freezing)",
+            "fr": "Alerte (high, low, normal, freezing)",
+            "de": "Warnung (high, low, normal, freezing)",
+            "es": "Alerta (high, low, normal, freezing)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "humidity_alert",
+      "label": {
+        "en": "Minut: humidity alert",
+        "fr": "Minut : alerte d’humidité",
+        "de": "Minut: Feuchtigkeitswarnung",
+        "es": "Minut: alerta de humedad"
+      },
+      "description": {
+        "en": "The humidity crosses a threshold set in Minut, or comes back to normal.",
+        "fr": "L’humidité franchit un seuil réglé dans Minut, ou revient à la normale.",
+        "de": "Die Luftfeuchtigkeit überschreitet eine in Minut gesetzte Schwelle oder normalisiert sich.",
+        "es": "La humedad cruza un umbral definido en Minut, o vuelve a la normalidad."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Alert",
+            "fr": "Alerte",
+            "de": "Warnung",
+            "es": "Alerta"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "high",
+              "label": {
+                "en": "Too high",
+                "fr": "Trop élevée",
+                "de": "Zu hoch",
+                "es": "Demasiado alta"
+              }
+            },
+            {
+              "value": "low",
+              "label": {
+                "en": "Too low",
+                "fr": "Trop basse",
+                "de": "Zu niedrig",
+                "es": "Demasiado baja"
+              }
+            },
+            {
+              "value": "normal",
+              "label": {
+                "en": "Back to normal",
+                "fr": "Revenue à la normale",
+                "de": "Wieder normal",
+                "es": "De nuevo normal"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "Alert (high, low, normal)",
+            "fr": "Alerte (high, low, normal)",
+            "de": "Warnung (high, low, normal)",
+            "es": "Alerta (high, low, normal)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "mould_risk",
+      "label": {
+        "en": "Minut: risk of mould",
+        "fr": "Minut : risque de moisissure",
+        "de": "Minut: Schimmelgefahr",
+        "es": "Minut: riesgo de moho"
+      },
+      "description": {
+        "en": "Minut sees conditions for mould growth, or they are over.",
+        "fr": "Minut détecte des conditions propices aux moisissures, ou leur fin.",
+        "de": "Minut erkennt Bedingungen für Schimmelbildung oder deren Ende.",
+        "es": "Minut detecta condiciones para la aparición de moho, o su fin."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "State",
+            "fr": "État",
+            "de": "Zustand",
+            "es": "Estado"
+          },
+          "description": {
+            "en": "Leave empty for all.",
+            "fr": "Laissez vide pour tous.",
+            "de": "Leer lassen für alle.",
+            "es": "Déjelo vacío para todos."
+          },
+          "options": [
+            {
+              "value": "detected",
+              "label": {
+                "en": "Detected",
+                "fr": "Détecté",
+                "de": "Erkannt",
+                "es": "Detectado"
+              }
+            },
+            {
+              "value": "cleared",
+              "label": {
+                "en": "Over",
+                "fr": "Terminé",
+                "de": "Vorbei",
+                "es": "Terminado"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "State (detected, cleared)",
+            "fr": "État (detected, cleared)",
+            "de": "Zustand (detected, cleared)",
+            "es": "Estado (detected, cleared)"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "button_pressed",
+      "label": {
+        "en": "Minut: sensor button pressed",
+        "fr": "Minut : bouton du capteur pressé",
+        "de": "Minut: Sensortaste gedrückt",
+        "es": "Minut: botón del sensor pulsado"
+      },
+      "description": {
+        "en": "The button of a sensor is pressed (it reaches Gladys within a minute or two).",
+        "fr": "Le bouton d’un capteur est pressé (l’info arrive dans Gladys en une à deux minutes).",
+        "de": "Die Taste eines Sensors wird gedrückt (kommt nach ein bis zwei Minuten in Gladys an).",
+        "es": "Se pulsa el botón de un sensor (llega a Gladys en uno o dos minutos)."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        },
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
+          "description": {
+            "en": "A Minut sensor. Leave empty for any sensor.",
+            "fr": "Un capteur Minut. Laissez vide pour tous les capteurs.",
+            "de": "Ein Minut-Sensor. Leer lassen für jeden Sensor.",
+            "es": "Un sensor Minut. Déjelo vacío para cualquier sensor."
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Sensor (id in Gladys)",
+            "fr": "Capteur (id dans Gladys)",
+            "de": "Sensor (ID in Gladys)",
+            "es": "Sensor (id en Gladys)"
+          }
+        },
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Sensor name",
+            "fr": "Nom du capteur",
+            "de": "Name des Sensors",
+            "es": "Nombre del sensor"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "smoking_detected",
+      "label": {
+        "en": "Minut: smoking detected",
+        "fr": "Minut : tabagisme détecté",
+        "de": "Minut: Rauchen erkannt",
+        "es": "Minut: se detectó que se fuma"
+      },
+      "description": {
+        "en": "Minut detects a high risk that someone is smoking in the home.",
+        "fr": "Minut détecte un risque élevé que quelqu’un fume dans le logement.",
+        "de": "Minut erkennt ein hohes Risiko, dass im Zuhause geraucht wird.",
+        "es": "Minut detecta un riesgo alto de que alguien fume en el hogar."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "crowd_detected",
+      "label": {
+        "en": "Minut: crowd detected",
+        "fr": "Minut : affluence détectée",
+        "de": "Minut: Menschenmenge erkannt",
+        "es": "Minut: aglomeración detectada"
+      },
+      "description": {
+        "en": "Crowd detect finds more phones in the home than expected.",
+        "fr": "La détection d’affluence trouve plus de téléphones que prévu dans le logement.",
+        "de": "Die Personenzählung findet mehr Telefone im Zuhause als erwartet.",
+        "es": "La detección de aglomeraciones encuentra más teléfonos de lo previsto en el hogar."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "Leave empty for any home.",
+            "fr": "Laissez vide pour toutes les maisons.",
+            "de": "Leer lassen für jedes Zuhause.",
+            "es": "Déjelo vacío para cualquier hogar."
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "home",
+          "type": "string",
+          "label": {
+            "en": "Home (id in Gladys)",
+            "fr": "Maison (id dans Gladys)",
+            "de": "Zuhause (ID in Gladys)",
+            "es": "Hogar (id en Gladys)"
+          }
+        },
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "event_type",
+          "type": "string",
+          "label": {
+            "en": "Minut event type",
+            "fr": "Type d’événement Minut",
+            "de": "Minut-Ereignistyp",
+            "es": "Tipo de evento de Minut"
+          }
+        },
+        {
+          "key": "event_time",
+          "type": "string",
+          "label": {
+            "en": "Event time (ISO 8601)",
+            "fr": "Date de l’événement (ISO 8601)",
+            "de": "Zeitpunkt des Ereignisses (ISO 8601)",
+            "es": "Fecha del evento (ISO 8601)"
+          }
+        },
+        {
+          "key": "time",
+          "type": "string",
+          "label": {
+            "en": "Event hour",
+            "fr": "Heure de l’événement",
+            "de": "Uhrzeit des Ereignisses",
+            "es": "Hora del evento"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the event",
+            "fr": "Titre de l’événement",
+            "de": "Titel des Ereignisses",
+            "es": "Título del evento"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "set_alarm",
+      "timeout_seconds": 30,
+      "label": {
+        "en": "Minut: turn the alarm on or off",
+        "fr": "Minut : activer ou désactiver l’alarme",
+        "de": "Minut: Alarm ein- oder ausschalten",
+        "es": "Minut: activar o desactivar la alarma"
+      },
+      "description": {
+        "en": "The security alarm of a home. It never fires the alarm trigger.",
+        "fr": "L’alarme de sécurité d’une maison. Ne déclenche jamais le déclencheur d’alarme.",
+        "de": "Der Sicherheitsalarm eines Zuhauses. Löst nie den Alarm-Auslöser aus.",
+        "es": "La alarma de seguridad de un hogar. Nunca dispara el desencadenante de alarma."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "A Minut home (or one of its sensors). Leave empty for the first one.",
+            "fr": "Une maison Minut (ou l’un de ses capteurs). Laissez vide pour la première.",
+            "de": "Ein Minut-Zuhause (oder einer seiner Sensoren). Leer lassen für das erste.",
+            "es": "Un hogar Minut (o uno de sus sensores). Déjelo vacío para el primero."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "required": true,
+          "default": "on",
+          "label": {
+            "en": "Alarm",
+            "fr": "Alarme",
+            "de": "Alarm",
+            "es": "Alarma"
+          },
+          "options": [
+            {
+              "value": "on",
+              "label": {
+                "en": "On",
+                "fr": "Activée",
+                "de": "Ein",
+                "es": "Activada"
+              }
+            },
+            {
+              "value": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Désactivée",
+                "de": "Aus",
+                "es": "Desactivada"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "alarm_status",
+          "type": "string",
+          "label": {
+            "en": "Alarm status (on, off, on_grace_period, off_grace_period, critical_event)",
+            "fr": "État de l’alarme (on, off, on_grace_period, off_grace_period, critical_event)",
+            "de": "Alarmstatus (on, off, on_grace_period, off_grace_period, critical_event)",
+            "es": "Estado de la alarma (on, off, on_grace_period, off_grace_period, critical_event)"
+          }
+        },
+        {
+          "key": "alarm_on",
+          "type": "boolean",
+          "label": {
+            "en": "Alarm on",
+            "fr": "Alarme activée",
+            "de": "Alarm ein",
+            "es": "Alarma activada"
+          }
+        }
+      ]
+    },
+    {
+      "key": "silence_alarm",
+      "timeout_seconds": 30,
+      "label": {
+        "en": "Minut: silence the alarm",
+        "fr": "Minut : faire taire l’alarme",
+        "de": "Minut: Alarm stummschalten",
+        "es": "Minut: silenciar la alarma"
+      },
+      "description": {
+        "en": "Silences an ongoing alarm of a home and turns it off.",
+        "fr": "Fait taire l’alarme en cours d’une maison et la désactive.",
+        "de": "Schaltet einen laufenden Alarm eines Zuhauses stumm und aus.",
+        "es": "Silencia la alarma en curso de un hogar y la desactiva."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "A Minut home (or one of its sensors). Leave empty for the first one.",
+            "fr": "Une maison Minut (ou l’un de ses capteurs). Laissez vide pour la première.",
+            "de": "Ein Minut-Zuhause (oder einer seiner Sensoren). Leer lassen für das erste.",
+            "es": "Un hogar Minut (o uno de sus sensores). Déjelo vacío para el primero."
+          },
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "alarm_status",
+          "type": "string",
+          "label": {
+            "en": "Alarm status (on, off, on_grace_period, off_grace_period, critical_event)",
+            "fr": "État de l’alarme (on, off, on_grace_period, off_grace_period, critical_event)",
+            "de": "Alarmstatus (on, off, on_grace_period, off_grace_period, critical_event)",
+            "es": "Estado de la alarma (on, off, on_grace_period, off_grace_period, critical_event)"
+          }
+        },
+        {
+          "key": "alarm_on",
+          "type": "boolean",
+          "label": {
+            "en": "Alarm on",
+            "fr": "Alarme activée",
+            "de": "Alarm ein",
+            "es": "Alarma activada"
+          }
+        }
+      ]
+    },
+    {
+      "key": "set_noise_monitoring",
+      "timeout_seconds": 30,
+      "label": {
+        "en": "Minut: pause or resume noise alerts",
+        "fr": "Minut : suspendre ou reprendre les alertes bruit",
+        "de": "Minut: Lärmalarme pausieren oder fortsetzen",
+        "es": "Minut: pausar o reanudar alertas de ruido"
+      },
+      "description": {
+        "en": "Pauses the noise monitoring of a home for a while, or resumes it.",
+        "fr": "Met en pause la surveillance du bruit d’une maison pour un temps, ou la reprend.",
+        "de": "Pausiert die Lärmüberwachung eines Zuhauses für eine Weile oder setzt sie fort.",
+        "es": "Pausa la vigilancia del ruido de un hogar durante un tiempo, o la reanuda."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "A Minut home (or one of its sensors). Leave empty for the first one.",
+            "fr": "Une maison Minut (ou l’un de ses capteurs). Laissez vide pour la première.",
+            "de": "Ein Minut-Zuhause (oder einer seiner Sensoren). Leer lassen für das erste.",
+            "es": "Un hogar Minut (o uno de sus sensores). Déjelo vacío para el primero."
+          },
+          "required": false
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "required": true,
+          "default": "pause",
+          "label": {
+            "en": "Noise alerts",
+            "fr": "Alertes bruit",
+            "de": "Lärmalarme",
+            "es": "Alertas de ruido"
+          },
+          "options": [
+            {
+              "value": "pause",
+              "label": {
+                "en": "Pause",
+                "fr": "Suspendre",
+                "de": "Pausieren",
+                "es": "Pausar"
+              }
+            },
+            {
+              "value": "resume",
+              "label": {
+                "en": "Resume",
+                "fr": "Reprendre",
+                "de": "Fortsetzen",
+                "es": "Reanudar"
+              }
+            }
+          ]
+        },
+        {
+          "key": "minutes",
+          "type": "number",
+          "required": false,
+          "min": 5,
+          "max": 1440,
+          "label": {
+            "en": "Pause (minutes)",
+            "fr": "Pause (minutes)",
+            "de": "Pause (Minuten)",
+            "es": "Pausa (minutos)"
+          },
+          "description": {
+            "en": "Leave empty for the length of the configuration.",
+            "fr": "Laissez vide pour la durée de la configuration.",
+            "de": "Leer lassen für die Dauer aus der Konfiguration.",
+            "es": "Déjelo vacío para la duración de la configuración."
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "noise_state",
+          "type": "string",
+          "label": {
+            "en": "Noise state (idle, level_1 … level_4, snoozed, inactive)",
+            "fr": "État du bruit (idle, level_1 … level_4, snoozed, inactive)",
+            "de": "Lärmzustand (idle, level_1 … level_4, snoozed, inactive)",
+            "es": "Estado del ruido (idle, level_1 … level_4, snoozed, inactive)"
+          }
+        },
+        {
+          "key": "noise_monitoring",
+          "type": "boolean",
+          "label": {
+            "en": "Noise alerts watching",
+            "fr": "Alertes bruit actives",
+            "de": "Lärmalarme aktiv",
+            "es": "Alertas de ruido activas"
+          }
+        }
+      ]
+    },
+    {
+      "key": "refresh_status",
+      "timeout_seconds": 60,
+      "label": {
+        "en": "Minut: read the status of a home",
+        "fr": "Minut : lire l’état d’une maison",
+        "de": "Minut: Status eines Zuhauses lesen",
+        "es": "Minut: leer el estado de un hogar"
+      },
+      "description": {
+        "en": "Reads Minut again if needed: alarm, noise, sensors, and a sentence for a message.",
+        "fr": "Relit Minut si besoin : alarme, bruit, capteurs, et une phrase pour un message.",
+        "de": "Liest Minut bei Bedarf neu: Alarm, Lärm, Sensoren und ein Satz für eine Nachricht.",
+        "es": "Vuelve a leer Minut si hace falta: alarma, ruido, sensores y una frase para un mensaje."
+      },
+      "fields": [
+        {
+          "key": "home",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Minut home",
+            "fr": "Maison Minut",
+            "de": "Minut-Zuhause",
+            "es": "Hogar Minut"
+          },
+          "description": {
+            "en": "A Minut home (or one of its sensors). Leave empty for the first one.",
+            "fr": "Une maison Minut (ou l’un de ses capteurs). Laissez vide pour la première.",
+            "de": "Ein Minut-Zuhause (oder einer seiner Sensoren). Leer lassen für das erste.",
+            "es": "Un hogar Minut (o uno de sus sensores). Déjelo vacío para el primero."
+          },
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "home_name",
+          "type": "string",
+          "label": {
+            "en": "Home name",
+            "fr": "Nom de la maison",
+            "de": "Name des Zuhauses",
+            "es": "Nombre del hogar"
+          }
+        },
+        {
+          "key": "alarm_status",
+          "type": "string",
+          "label": {
+            "en": "Alarm status (on, off, on_grace_period, off_grace_period, critical_event)",
+            "fr": "État de l’alarme (on, off, on_grace_period, off_grace_period, critical_event)",
+            "de": "Alarmstatus (on, off, on_grace_period, off_grace_period, critical_event)",
+            "es": "Estado de la alarma (on, off, on_grace_period, off_grace_period, critical_event)"
+          }
+        },
+        {
+          "key": "alarm_on",
+          "type": "boolean",
+          "label": {
+            "en": "Alarm on",
+            "fr": "Alarme activée",
+            "de": "Alarm ein",
+            "es": "Alarma activada"
+          }
+        },
+        {
+          "key": "noise_state",
+          "type": "string",
+          "label": {
+            "en": "Noise state (idle, level_1 … level_4, snoozed, inactive)",
+            "fr": "État du bruit (idle, level_1 … level_4, snoozed, inactive)",
+            "de": "Lärmzustand (idle, level_1 … level_4, snoozed, inactive)",
+            "es": "Estado del ruido (idle, level_1 … level_4, snoozed, inactive)"
+          }
+        },
+        {
+          "key": "noise_monitoring",
+          "type": "boolean",
+          "label": {
+            "en": "Noise alerts watching",
+            "fr": "Alertes bruit actives",
+            "de": "Lärmalarme aktiv",
+            "es": "Alertas de ruido activas"
+          }
+        },
+        {
+          "key": "sensors_online",
+          "type": "number",
+          "label": {
+            "en": "Sensors online",
+            "fr": "Capteurs en ligne",
+            "de": "Sensoren online",
+            "es": "Sensores conectados"
+          }
+        },
+        {
+          "key": "sensors_offline",
+          "type": "number",
+          "label": {
+            "en": "Sensors offline",
+            "fr": "Capteurs hors ligne",
+            "de": "Sensoren offline",
+            "es": "Sensores sin conexión"
+          }
+        },
+        {
+          "key": "temperature",
+          "type": "number",
+          "label": {
+            "en": "Temperature (°C, average)",
+            "fr": "Température (°C, moyenne)",
+            "de": "Temperatur (°C, Mittel)",
+            "es": "Temperatura (°C, media)"
+          }
+        },
+        {
+          "key": "humidity",
+          "type": "number",
+          "label": {
+            "en": "Humidity (%, average)",
+            "fr": "Humidité (%, moyenne)",
+            "de": "Luftfeuchtigkeit (%, Mittel)",
+            "es": "Humedad (%, media)"
+          }
+        },
+        {
+          "key": "sound_level",
+          "type": "number",
+          "label": {
+            "en": "Loudest sound level (dBA)",
+            "fr": "Niveau sonore le plus fort (dBA)",
+            "de": "Höchster Geräuschpegel (dBA)",
+            "es": "Nivel sonoro más alto (dBA)"
+          }
+        },
+        {
+          "key": "lowest_battery",
+          "type": "number",
+          "label": {
+            "en": "Lowest battery (%)",
+            "fr": "Pile la plus faible (%)",
+            "de": "Schwächste Batterie (%)",
+            "es": "Batería más baja (%)"
+          }
+        },
+        {
+          "key": "summary",
+          "type": "string",
+          "label": {
+            "en": "Summary sentence",
+            "fr": "Phrase de résumé",
+            "de": "Zusammenfassung",
+            "es": "Frase de resumen"
+          }
+        }
+      ]
+    }
+  ]
+}

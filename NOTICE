@@ -1,0 +1,16 @@
+Gladys Minut integration
+Copyright 2026 William Deren
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The data comes from the Minut sensors and homes of the user, through the
+official Minut API (https://developer.minut.com,
+https://api.minut.com/latest/docs), with the API client of the user.
+
+The files under test/fixtures are built after the OpenAPI reference of the
+Minut API v8 and the examples of its guides.
+
+Minut and the Minut logo (shown on the cover image, cover.jpg and
+docs/assets/cover.svg, to name the service the integration connects to) are
+trademarks of their owner. This community integration is not affiliated with,
+endorsed or sponsored by Minut.

@@ -1,0 +1,71 @@
+{
+  "devices": [
+    {
+      "device_id": "647846155f4adc639addaa1b",
+      "device_mac": "a4:cf:12:00:aa:1b",
+      "owner": "5ffff21db167b70039f806f8",
+      "home": "5ffff22ab167b70039f806fe",
+      "active": true,
+      "offline": false,
+      "description": "Living room",
+      "first_seen_at": "2025-03-02T10:00:00.000Z",
+      "last_heard_from_at": "2026-11-01T08:23:06.000Z",
+      "last_heartbeat_at": "2026-11-01T08:23:06.000Z",
+      "next_heartbeat_at": "2026-11-01T09:23:06.000Z",
+      "firmware": { "installed": 389 },
+      "hardware_version": 4,
+      "battery": { "voltage": 2.98, "percent": 74 },
+      "capabilities": [],
+      "device_icon_url": {},
+      "always_notify_when_noisy": false,
+      "mount_status": "mounted",
+      "latest_sensor_values": {
+        "temperature": { "time": "2026-11-01T08:23:06.000Z", "value": 21.815673828125 },
+        "sound": { "time": "2026-11-01T08:22:59.000Z", "value": 43.774658203125 },
+        "humidity": { "time": "2026-11-01T08:23:06.000Z", "value": 40.0634765625 },
+        "pressure": { "time": "2026-11-01T08:23:06.000Z", "value": 1013.4 }
+      }
+    },
+    {
+      "device_id": "647846155f4adc639addaa2c",
+      "device_mac": "a4:cf:12:00:aa:2c",
+      "owner": "5ffff21db167b70039f806f8",
+      "home": "5ffff22ab167b70039f806fe",
+      "active": true,
+      "offline": true,
+      "description": "Bedroom",
+      "first_seen_at": "2025-03-02T10:00:00.000Z",
+      "last_heard_from_at": "2026-11-01T03:10:00.000Z",
+      "firmware": { "installed": 389 },
+      "hardware_version": 3,
+      "battery": { "voltage": 2.61, "percent": 12 },
+      "capabilities": [],
+      "device_icon_url": {},
+      "always_notify_when_noisy": false,
+      "mount_status": "unsupported",
+      "latest_sensor_values": {
+        "temperature": { "time": "2026-11-01T03:10:00.000Z", "value": 19.2 },
+        "humidity": { "time": "2026-11-01T03:10:00.000Z", "value": 48.5 },
+        "sound": { "time": "2026-11-01T03:10:00.000Z", "value": 31.2 }
+      }
+    },
+    {
+      "device_id": "647846155f4adc639addaa3d",
+      "device_mac": "a4:cf:12:00:aa:3d",
+      "owner": "5ffff21db167b70039f806f8",
+      "home": "5ffff22ab167b70039f80701",
+      "active": false,
+      "offline": true,
+      "description": "Moved away",
+      "first_seen_at": "2025-03-02T10:00:00.000Z",
+      "last_heard_from_at": "2026-01-01T00:00:00.000Z",
+      "firmware": { "installed": 300 },
+      "hardware_version": 3,
+      "battery": { "voltage": 2.9 },
+      "capabilities": [],
+      "device_icon_url": {},
+      "always_notify_when_noisy": false
+    }
+  ],
+  "paging": { "offset": 0, "limit": 60, "total_count": 3 }
+}

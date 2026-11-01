@@ -1,0 +1,922 @@
+{
+  "devices": {
+    "sensor": {
+      "external_id": "ext:minut:sensor:647846155f4adc639addaa1b",
+      "should_poll": false,
+      "params": [],
+      "features": [
+        {
+          "external_id": "ext:minut:sensor:647846155f4adc639addaa1b:temperature",
+          "category": "temperature-sensor",
+          "type": "decimal",
+          "unit": "celsius",
+          "min": -40,
+          "max": 85,
+          "read_only": true,
+          "has_feedback": false
+        },
+        {
+          "external_id": "ext:minut:sensor:647846155f4adc639addaa1b:humidity",
+          "category": "humidity-sensor",
+          "type": "decimal",
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "read_only": true,
+          "has_feedback": false
+        },
+        {
+          "external_id": "ext:minut:sensor:647846155f4adc639addaa1b:sound",
+          "category": "noise-sensor",
+          "type": "integer",
+          "unit": "decibel",
+          "min": 0,
+          "max": 150,
+          "read_only": true,
+          "has_feedback": false
+        },
+        {
+          "external_id": "ext:minut:sensor:647846155f4adc639addaa1b:pressure",
+          "category": "pressure-sensor",
+          "type": "decimal",
+          "unit": "hPa",
+          "min": 300,
+          "max": 1100,
+          "read_only": true,
+          "has_feedback": false
+        },
+        {
+          "external_id": "ext:minut:sensor:647846155f4adc639addaa1b:battery",
+          "category": "battery",
+          "type": "integer",
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "read_only": true,
+          "has_feedback": false
+        },
+        {
+          "external_id": "ext:minut:sensor:647846155f4adc639addaa1b:tamper",
+          "category": "tamper",
+          "type": "binary",
+          "min": 0,
+          "max": 1,
+          "read_only": true,
+          "has_feedback": false
+        }
+      ]
+    },
+    "home": {
+      "external_id": "ext:minut:home:5ffff22ab167b70039f806fe",
+      "should_poll": false,
+      "params": [],
+      "features": [
+        {
+          "external_id": "ext:minut:home:5ffff22ab167b70039f806fe:alarm",
+          "category": "switch",
+          "type": "binary",
+          "min": 0,
+          "max": 1,
+          "read_only": false,
+          "has_feedback": true
+        },
+        {
+          "external_id": "ext:minut:home:5ffff22ab167b70039f806fe:alarm_status",
+          "category": "text",
+          "type": "text",
+          "min": 0,
+          "max": 0,
+          "read_only": true,
+          "has_feedback": false
+        },
+        {
+          "external_id": "ext:minut:home:5ffff22ab167b70039f806fe:noise_monitoring",
+          "category": "switch",
+          "type": "binary",
+          "min": 0,
+          "max": 1,
+          "read_only": false,
+          "has_feedback": true
+        },
+        {
+          "external_id": "ext:minut:home:5ffff22ab167b70039f806fe:disturbance",
+          "category": "text",
+          "type": "text",
+          "min": 0,
+          "max": 0,
+          "read_only": true,
+          "has_feedback": false
+        }
+      ]
+    }
+  },
+  "manifest": {
+    "actions": ["test_connection", "diagnostic"],
+    "config_schema": [
+      {
+        "key": "intro",
+        "type": "section"
+      },
+      {
+        "key": "client_id",
+        "type": "string"
+      },
+      {
+        "key": "client_secret",
+        "type": "secret"
+      },
+      {
+        "key": "options",
+        "type": "section"
+      },
+      {
+        "key": "snooze_minutes",
+        "type": "number"
+      },
+      {
+        "key": "language",
+        "type": "select"
+      }
+    ],
+    "scene_triggers": [
+      {
+        "key": "noise_disturbance",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["started", "ended"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          },
+          {
+            "key": "sound_level",
+            "type": "number"
+          },
+          {
+            "key": "sound_threshold",
+            "type": "number"
+          },
+          {
+            "key": "noise_count",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "key": "alarm_heard",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "security_alarm",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["triggered", "silenced", "muted"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "alarm_status_changed",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["on", "off"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          },
+          {
+            "key": "alarm_status",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "tamper",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["removed", "mounted", "moved", "casing"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "connection_changed",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["offline", "online"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "battery_low",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["low", "empty"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "temperature_alert",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["high", "low", "normal", "freezing"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "humidity_alert",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["high", "low", "normal"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "mould_risk",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          },
+          {
+            "key": "state",
+            "options": ["detected", "cleared"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "state",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "button_pressed",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          },
+          {
+            "key": "device",
+            "options": []
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "device",
+            "type": "string"
+          },
+          {
+            "key": "device_name",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "smoking_detected",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "crowd_detected",
+        "fields": [
+          {
+            "key": "home",
+            "options": []
+          }
+        ],
+        "variables": [
+          {
+            "key": "home",
+            "type": "string"
+          },
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "event_type",
+            "type": "string"
+          },
+          {
+            "key": "event_time",
+            "type": "string"
+          },
+          {
+            "key": "time",
+            "type": "string"
+          },
+          {
+            "key": "title",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "scene_actions": [
+      {
+        "key": "set_alarm",
+        "fields": ["home", "state"],
+        "outputs": [
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "alarm_status",
+            "type": "string"
+          },
+          {
+            "key": "alarm_on",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "key": "silence_alarm",
+        "fields": ["home"],
+        "outputs": [
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "alarm_status",
+            "type": "string"
+          },
+          {
+            "key": "alarm_on",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "key": "set_noise_monitoring",
+        "fields": ["home", "state", "minutes"],
+        "outputs": [
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "noise_state",
+            "type": "string"
+          },
+          {
+            "key": "noise_monitoring",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "key": "refresh_status",
+        "fields": ["home"],
+        "outputs": [
+          {
+            "key": "home_name",
+            "type": "string"
+          },
+          {
+            "key": "alarm_status",
+            "type": "string"
+          },
+          {
+            "key": "alarm_on",
+            "type": "boolean"
+          },
+          {
+            "key": "noise_state",
+            "type": "string"
+          },
+          {
+            "key": "noise_monitoring",
+            "type": "boolean"
+          },
+          {
+            "key": "sensors_online",
+            "type": "number"
+          },
+          {
+            "key": "sensors_offline",
+            "type": "number"
+          },
+          {
+            "key": "temperature",
+            "type": "number"
+          },
+          {
+            "key": "humidity",
+            "type": "number"
+          },
+          {
+            "key": "sound_level",
+            "type": "number"
+          },
+          {
+            "key": "lowest_battery",
+            "type": "number"
+          },
+          {
+            "key": "summary",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "widgets": [
+      {
+        "key": "home",
+        "settings": ["home"],
+        "options": {}
+      },
+      {
+        "key": "events",
+        "settings": ["home"],
+        "options": {}
+      },
+      {
+        "key": "sound_history",
+        "settings": ["device"],
+        "options": {}
+      }
+    ]
+  }
+}

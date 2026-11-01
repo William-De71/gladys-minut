@@ -1,0 +1,6 @@
+{
+  "organizations": [
+    { "id": "5ffff20fb167b70039f806f0", "name": "Chalets du lac", "current_plan": "pro" }
+  ],
+  "paging": { "offset": 0, "limit": 20, "total_count": 1 }
+}

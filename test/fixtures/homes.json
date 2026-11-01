@@ -1,0 +1,40 @@
+{
+  "homes": [
+    {
+      "home_id": "5ffff22ab167b70039f806fe",
+      "organization_id": "5ffff20fb167b70039f806f0",
+      "name": "Chalet",
+      "timezone": "Europe/Paris",
+      "created_at": "2025-03-02T10:00:00.000Z",
+      "created_by": "5ffff21db167b70039f806f8",
+      "owner": { "id": "5ffff21db167b70039f806f8", "type": "user" },
+      "country": ["FR"],
+      "user_role": "owner",
+      "water_leak_detection": {},
+      "alarm": {
+        "alarm_status": "off",
+        "alarm_mode": "manual",
+        "silent_alarm": false,
+        "grace_period_secs": 60
+      },
+      "disturbance_monitoring": {
+        "disturbance_monitoring_active": true,
+        "state": "idle",
+        "current_state_update_at": "2026-11-01T08:00:00.000Z"
+      }
+    },
+    {
+      "home_id": "5ffff22ab167b70039f80701",
+      "organization_id": "5ffff20fb167b70039f806f0",
+      "name": "Studio",
+      "timezone": "Europe/Paris",
+      "created_at": "2025-03-02T10:00:00.000Z",
+      "created_by": "5ffff21db167b70039f806f8",
+      "owner": { "id": "5ffff21db167b70039f806f8", "type": "user" },
+      "country": ["FR"],
+      "user_role": "owner",
+      "water_leak_detection": {}
+    }
+  ],
+  "paging": { "offset": 0, "limit": 300, "total_count": 2 }
+}
